@@ -95,9 +95,35 @@ class Window:
 
 
     def create_title(self, title: str) -> None:
+        '''
+        Description:
+        -------------
+            create title for the game window
+
+        Parameters:
+        -----------
+            title: str
+                the text to show in the title
+        '''
         pygame.display.set_caption(title)
     
     def write_to_window(self, messege: str, size: int, font='comicsans', location='middle') -> None:
+        '''
+        Description:
+        -------------
+            method to write text into the game window
+
+        Parameters:
+        -----------
+            messege: str
+                text messege to display
+            size: int
+                the size of the text
+            font: default - 'comicsans'
+            location: default - 'middle'
+                where to display the text (y axis)
+                option: lower, middle
+        '''
         FONT = pygame.font.SysFont(font, size)
         text = FONT.render(messege, 1, 'white')
         if location == 'middle':
@@ -107,7 +133,22 @@ class Window:
         self.screen.blit(text, location)
         pygame.display.update()
     
-    def new_score_board(self, spaceships, font: str, size: int, color: tuple) -> None:
+    def new_score_board(self, spaceships: list, font: str, size: int, color: tuple) -> None:
+        '''
+        Description:
+        -------------
+            create new scoreboard
+
+        Parameters:
+        -----------
+            spaceships: list of Spaceship objects
+            font: str
+                the font to write with
+            size: int
+                size of the text
+            color: tuple
+                RGB color 
+        '''
         FONT = pygame.font.SysFont(font, size)
         right = FONT.render("LIFE " + str(spaceships[0].life), 1, color)
         self.screen.blit(right,(self.width - right.get_width() - 10, 10))
@@ -115,6 +156,22 @@ class Window:
         self.screen.blit(left, (10, 10))
 
     def check_borders(self, entity, border: str) -> bool:
+        '''
+        Description:
+        -------------
+            check if any object cross the window borders
+
+        Parameters:
+        -----------
+            entity: ADT object of the game
+                the checked object
+            border: str
+                the checked border crossed
+        
+        Return:
+        --------
+            bool value represent if cross border occur
+        '''
         cross_border = False
         if border == 'left' and entity.x < self.borders[border]:
             cross_border = True
@@ -132,6 +189,20 @@ class Window:
         return cross_border
 
     def check_collide(self, object1, object2) -> bool:
+        '''
+        Description:
+        -------------
+            check collide of two ADT objects
+
+        Parameters:
+        -----------
+            object1: ADT object of the game
+            object2: ADT object of the game
+        
+        Return:
+        --------
+            bool value represent if collide occur
+        '''
         if object1.colliderect(object2):
             pygame.event.post(pygame.event.Event(__class__.COLLIDE))
             return True
@@ -139,6 +210,16 @@ class Window:
             return False
     
     def handle_objects_movement(self, *args) -> None:
+        '''
+        Description:
+        -------------
+            move the all the objects given on the game window
+
+        Parameters:
+        -----------
+            *args:
+                every list of objects need to be moved on the window 
+        '''
         for objects in args:
             if type(objects) is not list:
                 raise Exception('Window can move objects collect in a list only')
@@ -147,6 +228,18 @@ class Window:
 
     
     def handle_objects_events(self, blue_spaceship, red_spaceship, stones: list) -> None:
+        '''
+        Description:
+        -------------
+            handle the objects collide, cross borders, hit, miss and got hit
+
+        Parameters:
+        -----------
+            blue_spaceship: Spaceship object in left side
+            red_spaceship: Spaceship object in right side
+            stones: list
+                the list of stones in the window
+        '''
         for stone in stones: # section 1.10
             if self.check_borders(stone, 'left') or self.check_borders(stone, 'right'):
                 stone.explode(stones, sound=False)
@@ -177,15 +270,24 @@ class Window:
                     blue_spaceship.miss_shoot(blue_bullet)
 
 
-    def draw_window(self, spaceships: list, stacks: dict, stones: list) -> None:
+    def draw_window(self, spaceships: list, stones: list) -> None:
+        '''
+        Description:
+        -------------
+            draw the window objects current state and update the surface
+
+        Parameters:
+        -----------
+            spaceships: list of Spaceship objects
+            stones: list of all Stones objects
+        '''
         self.screen.blit(self.background, (0,0))
         pygame.draw.rect(self.screen, 'black', self._mid_border)
         for spaceship in spaceships:
-            spaceship.blitSpachship(self.screen)
+            spaceship.blit_spachship(self.screen)
+            for bullet in spaceship.stack:
+                bullet.blitBullet(self.screen)
         self.new_score_board(spaceships, 'comicsans', 40, (255, 255, 255))
-        all_bullets = stacks['red_stack'] + stacks['blue_stack']
-        for bullet in all_bullets:
-            bullet.blitBullet(self.screen)
         for stone in stones:
             stone.blitStone(self.screen)
         self.write_to_window('Ohad Mizrahi|Or Solomon|Bar Siboni', 18, location='lower') # section 1.5
