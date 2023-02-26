@@ -9,31 +9,42 @@ from typing import Tuple
 pygame.font.init()
 pygame.mixer.init()
 
-# TODO sections: 1.2, 1.11, 1.1 
+# TODO sections: 1.11 
 
 # Global Variables
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 44
-WIDTH, HEIGHT = 1200, 700 # section 1.8 
+WINDOW_WIDTH, WINDOW_HEIGHT = 1200, 700 # section 1.8 
+BULLET_WIDTH, BULLET_HEIGHT = 50, 25
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0) 
 SPACESHIP_STEP = 5 
 OBJECTS_STEP = 7
 MAX_BULLET = 5 # section 1.6
 STONES = []
+BG_IMG = 'new_space.png' # section 1.2
+BLUE_SPACESHIP_IMG, RED_SPACESHIP_IMG = 'blue_spaceship.png', 'new_red_spaceship.png'
+BLUE_BULLET_IMG, RED_BULLET_IMG = 'blue_bullets.png', 'red_bullets.png'
+STONE_IMG = 'stone.png'
+FPS = 60
+MX_LIFE = 10
+END_GAME_DELAY = 5000
+
 
 # Keyboard Keys
-blue_keys = {'left': pygame.K_a, 'right': pygame.K_d, 'up': pygame.K_w, 'down': pygame.K_s}
+# section 1.1
+blue_keys = {'left': pygame.K_1, 'right': pygame.K_4, 'up': pygame.K_3, 'down': pygame.K_2}
 red_keys = {'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'up': pygame.K_UP, 'down': pygame.K_DOWN}
 
 # Create objects
 def create_game_objects() -> Tuple[Spaceship, Spaceship, Window]:
-    window = Window(WIDTH, HEIGHT, 'space.png', 60)
-    blue_spaceship = Spaceship(75, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT,
-                                'blue_spaceship.png', 90, blue_keys, 10, MAX_BULLET, 1, 'blue')
-    red_spaceship = Spaceship(window.width-100, 300, SPACESHIP_WIDTH,
-                            SPACESHIP_HEIGHT, 'new_red_spaceship.png', 270, red_keys, 10, MAX_BULLET, 1, 'red')                
+    window = Window(WINDOW_WIDTH, WINDOW_HEIGHT, BG_IMG, FPS)
+    blue_spaceship = Spaceship(75, window.height//2 -55 , SPACESHIP_WIDTH, SPACESHIP_HEIGHT,
+                                BLUE_SPACESHIP_IMG, 90, blue_keys, MX_LIFE, MAX_BULLET, 1, 'blue')
+    red_spaceship = Spaceship(window.width-100, window.height//2 -55, SPACESHIP_WIDTH,
+                            SPACESHIP_HEIGHT, RED_SPACESHIP_IMG, 270, red_keys, MX_LIFE, MAX_BULLET, 1, 'red')                
     return blue_spaceship, red_spaceship, window
 
+# Listen to the game event
 def listen_events(blue_spaceship: Spaceship, red_spaceship: Spaceship, window: Window):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -43,20 +54,20 @@ def listen_events(blue_spaceship: Spaceship, red_spaceship: Spaceship, window: W
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     return False
-                if event.key == pygame.K_LCTRL:
-                    bullet = Bullet(50, 25, blue_spaceship, 'blue_bullets.png', OBJECTS_STEP, 1)
+                if event.key == pygame.K_q: #section 1.1
+                    bullet = Bullet(BULLET_WIDTH, BULLET_HEIGHT, blue_spaceship, BLUE_BULLET_IMG, OBJECTS_STEP, 1)
                     blue_spaceship.shoot(bullet)
                 if event.key == pygame.K_RCTRL:
-                    bullet = Bullet(50, 25, red_spaceship, 'red_bullets.png', OBJECTS_STEP, -1)
+                    bullet = Bullet(BULLET_WIDTH, BULLET_HEIGHT, red_spaceship, RED_BULLET_IMG, OBJECTS_STEP, -1)
                     red_spaceship.shoot(bullet)
                 if event.key == pygame.K_RSHIFT: # section 1.9
-                    big_bullet = BigBullet(100, 50, red_spaceship, 'red_bullets.png', OBJECTS_STEP, -1)
+                    big_bullet = BigBullet(BULLET_WIDTH*2, BULLET_HEIGHT*2, red_spaceship, RED_BULLET_IMG, OBJECTS_STEP, -1)
                     red_spaceship.shoot(big_bullet)
                 if event.key == pygame.K_LSHIFT: # section 1.9
-                    big_bullet = BigBullet(100, 50, blue_spaceship, 'blue_bullets.png', OBJECTS_STEP, 1)
+                    big_bullet = BigBullet(BULLET_WIDTH*2, BULLET_HEIGHT*2, blue_spaceship, BLUE_BULLET_IMG, OBJECTS_STEP, 1)
                     blue_spaceship.shoot(big_bullet)
                 if event.key == pygame.K_SPACE: # section 1.10
-                    stone = Stone(random.choice([0,window.width-50]), random.randint(0, window.height-50), 50, 50, 'stone.png', OBJECTS_STEP)
+                    stone = Stone(random.choice([0,window.width-50]), random.randint(0, window.height-50), 50, 50, STONE_IMG, OBJECTS_STEP)
                     STONES.append(stone)
                 if event.key == pygame.K_TAB: # section 1.11 bonus
                     pass
@@ -65,13 +76,15 @@ def listen_events(blue_spaceship: Spaceship, red_spaceship: Spaceship, window: W
 
 
 def end_game(spaceship1: Spaceship, spaceship2: Spaceship, window: Window) -> bool:
+    SIZE = 40
+    POSITION = (window.width//2)
     if spaceship1.explode():
-        window.write_to_window(f'Game over - Winner is {str(spaceship2)}', 40, (250,300)) # section 1.4
-        pygame.time.delay(5000)
+        window.write_to_window(f'Game over - Winner is {str(spaceship2)}', 40,) # section 1.4
+        pygame.time.delay(END_GAME_DELAY)
         return True
     elif spaceship2.explode():
-        window.write_to_window(f'Game over - Winner is {str(spaceship1)}', 40, (250,300)) # section 1.4
-        pygame.time.delay(5000)
+        window.write_to_window(f'Game over - Winner is {str(spaceship1)}', 40) # section 1.4
+        pygame.time.delay(END_GAME_DELAY)
         return True
     else:
         return False

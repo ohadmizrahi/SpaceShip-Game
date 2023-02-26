@@ -97,9 +97,13 @@ class Window:
     def create_title(self, title: str) -> None:
         pygame.display.set_caption(title)
     
-    def write_to_window(self, messege: str, size: int, location: Tuple[int, int], font='comicsans') -> None:
+    def write_to_window(self, messege: str, size: int, font='comicsans', location='middle') -> None:
         FONT = pygame.font.SysFont(font, size)
         text = FONT.render(messege, 1, 'white')
+        if location == 'middle':
+            location = (self.width//2 - text.get_width()//2, self.height//2 - text.get_height()//2)
+        if location == 'lower':
+            location = (self.width//2 - text.get_width()//2, self.height - text.get_height())
         self.screen.blit(text, location)
         pygame.display.update()
     
@@ -112,17 +116,17 @@ class Window:
 
     def check_borders(self, entity, border: str) -> bool:
         cross_border = False
-        if border is 'left' and entity.x < self.borders[border]:
+        if border == 'left' and entity.x < self.borders[border]:
             cross_border = True
-        if border is 'right' and entity.x > self.borders[border] - entity.width:
+        if border == 'right' and entity.x > self.borders[border] - entity.width:
             cross_border = True
-        if border is 'up' and entity.y < self.borders[border]:
+        if border == 'up' and entity.y < self.borders[border]:
             cross_border = True
-        if border is 'down' and entity.y > self.borders[border] - entity.height:
+        if border == 'down' and entity.y > self.borders[border] - entity.height:
             cross_border = True
-        if border is 'mid_left' and entity.x == self.borders[border] + (entity.width-30):
+        if border == 'mid_left' and entity.x == self.borders[border] + (entity.width-30):
             cross_border = True
-        if border is 'mid_right' and entity.x == self.borders[border] - entity.width:
+        if border == 'mid_right' and entity.x == self.borders[border] - entity.width:
             cross_border = True
         
         return cross_border
@@ -184,6 +188,6 @@ class Window:
             bullet.blitBullet(self.screen)
         for stone in stones:
             stone.blitStone(self.screen)
-        self.write_to_window('Ohad Mizrahi|Or Solomon|Bar Siboni', 18, (300, self.height-40)) # section 1.5
+        self.write_to_window('Ohad Mizrahi|Or Solomon|Bar Siboni', 18, location='lower') # section 1.5
         pygame.display.update()
 
