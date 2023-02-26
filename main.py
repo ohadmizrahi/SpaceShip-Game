@@ -4,6 +4,7 @@ from Model.spaceship import Spaceship
 from Model.window import Window
 from Model.objects import Bullet, BigBullet, Stone
 import random
+from typing import Tuple
 
 pygame.font.init()
 pygame.mixer.init()
@@ -25,7 +26,7 @@ blue_keys = {'left': pygame.K_a, 'right': pygame.K_d, 'up': pygame.K_w, 'down': 
 red_keys = {'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'up': pygame.K_UP, 'down': pygame.K_DOWN}
 
 # Create objects
-def create_game_objects():
+def create_game_objects() -> Tuple[Spaceship, Spaceship, Window]:
     window = Window(WIDTH, HEIGHT, 'space.png', 60)
     blue_spaceship = Spaceship(75, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT,
                                 'blue_spaceship.png', 90, blue_keys, 10, MAX_BULLET, 1, 'blue')
@@ -33,15 +34,15 @@ def create_game_objects():
                             SPACESHIP_HEIGHT, 'new_red_spaceship.png', 270, red_keys, 10, MAX_BULLET, 1, 'red')                
     return blue_spaceship, red_spaceship, window
 
-def listen_events(blue_spaceship, red_spaceship, window):
+def listen_events(blue_spaceship: Spaceship, red_spaceship: Spaceship, window: Window):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
                 pygame.quit()
+                return False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    run - False
                     pygame.quit()
+                    return False
                 if event.key == pygame.K_LCTRL:
                     bullet = Bullet(50, 25, blue_spaceship, 'blue_bullets.png', OBJECTS_STEP, 1)
                     blue_spaceship.shoot(bullet)
@@ -63,7 +64,7 @@ def listen_events(blue_spaceship, red_spaceship, window):
                     restart_game()
 
 
-def end_game(spaceship1, spaceship2, window):
+def end_game(spaceship1: Spaceship, spaceship2: Spaceship, window: Window) -> bool:
     if spaceship1.explode():
         window.write_to_window(f'Game over - Winner is {str(spaceship2)}', 40, (250,300)) # section 1.4
         pygame.time.delay(5000)
@@ -75,25 +76,25 @@ def end_game(spaceship1, spaceship2, window):
     else:
         return False
 
-def restart_game():
+def restart_game() -> None:
     main()
 
-def main():
+def main() -> None:
     blue_spaceship, red_spaceship, window = create_game_objects()
     window.create_title('SpaceShip Game')
     clock = pygame.time.Clock()
     run = True
     while run:
         clock.tick(window.fps)
-        listen_events(blue_spaceship, red_spaceship, window)
+        response = listen_events(blue_spaceship, red_spaceship, window)
+        if response is False:
+            run = False
         if end_game(red_spaceship, blue_spaceship, window): # section 1.4
             restart_game() # section 1.4
 
         blue_spaceship.move(SPACESHIP_STEP, window)
         red_spaceship.move(SPACESHIP_STEP, window)
-        window.handle_objects_movement(red_spaceship.stack)
-        window.handle_objects_movement(blue_spaceship.stack)
-        window.handle_objects_movement(STONES)
+        window.handle_objects_movement(red_spaceship.stack, blue_spaceship.stack, STONES)
         window.handle_objects_events(blue_spaceship, red_spaceship, STONES)
         window.draw_window([red_spaceship, blue_spaceship], {'red_stack': red_spaceship._stack, 'blue_stack': blue_spaceship._stack}, STONES)
 

@@ -1,11 +1,9 @@
 import pygame
 import os
 
-# TODO create getter setter to direction in Stone class 
-
 class Bullet(pygame.Rect):
 
-    def __init__(self, width, height, spaceship, image_file, step, direction, power=1):
+    def __init__(self, width: int, height: int, spaceship, image_file: str, step: int, direction: int, power=1):
         self._width = width
         self._height = height
         self._power = power
@@ -60,6 +58,17 @@ class Bullet(pygame.Rect):
             self._step = new_step
 
     @property
+    def direction(self):
+        return self._direction
+    
+    @direction.setter
+    def direction(self, new_direction):
+        if new_direction not in [1,-1] :
+            raise Exception('Direction must be 1 or -1')
+        else:
+            self._direction = new_direction
+
+    @property
     def image_file(self):
         return self._image_file
     
@@ -71,20 +80,22 @@ class Bullet(pygame.Rect):
             self._image_file = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(
             os.path.join('Assets', new_image)), (self.height, self.width)), 0)
     
-    def blitBullet(self, window):
+    def blitBullet(self, window) -> None:
         window.blit(self._image_file, (self.x, self.y))
     
-    def move(self, step: int):
+    def move(self, step: int) -> None:
         self.x += (self._direction*step)
 
+
 class BigBullet(Bullet): # section 1.9
-    def __init__(self, width, height, spaceship, image_file, step, direction):
+
+    def __init__(self, width: int, height: int, spaceship, image_file: str, step: int, direction: int):
         super().__init__(width, height, spaceship, image_file, step, direction, power=2)
 
 
 class Stone(pygame.Rect): # section 1.10
 
-    def __init__(self, x, y, width, height, image_file, step, power=1) -> None:
+    def __init__(self, x: int, y: int, width: int, height: int, image_file: str, step: int, power=1) -> None:
         self._height = height
         self._width = width
         self._power = power
@@ -97,7 +108,6 @@ class Stone(pygame.Rect): # section 1.10
         self._image_file = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(
             os.path.join('Assets', image_file)), (self.height, self.width)), 0)
 
-    
     @property
     def width(self):
         return self._width
@@ -119,6 +129,17 @@ class Stone(pygame.Rect): # section 1.10
             raise Exception('Height must be int')
         else:
             self._color = new_height
+
+    @property
+    def direction(self):
+        return self._direction
+    
+    @direction.setter
+    def direction(self, new_direction):
+        if new_direction not in [1, -1]:
+            raise Exception('Direction must be 1 or -1')
+        else:
+            self._direction = new_direction
 
     @property
     def step(self):
@@ -154,13 +175,13 @@ class Stone(pygame.Rect): # section 1.10
         else:
             self._power = new_power
 
-    def blitStone(self, window):
+    def blitStone(self, window) -> None:
         window.blit(self.image_file, (self.x, self.y))
     
-    def move(self, step: int):
+    def move(self, step: int) -> None:
         self.x += (self._direction*step)
     
-    def explode(self, object_stack, sound=True):
+    def explode(self, object_stack, sound=True) -> None:
         if sound:
             explode = pygame.mixer.Sound('Assets\Grenade+1.mp3')
             explode.play(fade_ms= 1000)

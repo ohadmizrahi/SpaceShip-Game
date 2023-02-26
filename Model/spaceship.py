@@ -1,13 +1,15 @@
 import pygame
 import os
 from Model.objects import Bullet, BigBullet
-
+from typing import Dict
 
 # TODO fix the stack property
 
 class Spaceship(pygame.Rect):
 
-    def __init__(self, x, y, width, height, image_file, imageRotate, keys, life, max_bullets, max_big_bullets, color):
+    def __init__(self, x: int, y: int, width: int, height: int, image_file: str,
+                  imageRotate: int, keys: Dict[str, int], life: int, max_bullets: int,
+                    max_big_bullets: int, color: str) -> None:
 
         super().__init__(x, y, width, height)
         self._direction = imageRotate
@@ -18,14 +20,25 @@ class Spaceship(pygame.Rect):
         self._up = keys['up']
         self._down = keys['down']
         self._life = life
-        self.max_bullets = max_bullets
+        self._max_bullets = max_bullets
         self._stack = []
         self._color = color
         self._max_big_bullets = max_big_bullets
     
     def __str__(self) -> str:
         return f'{self._color} spaceship'
+
+    @property
+    def direction(self):
+        return self._direction
     
+    @direction.setter
+    def direction(self, new_direction):
+        if type(new_direction) is not int:
+            raise Exception('direction property must be int')
+        else:
+            self._direction = new_direction
+
     @property
     def color(self):
         return self._color
@@ -159,12 +172,12 @@ class Spaceship(pygame.Rect):
         if keys_pressed[self.down] and not window.check_borders(self, 'down'):
             self.y += STEP
     
-    def blitSpachship(self, window):
+    def blitSpachship(self, window) -> None:
         window.blit(self.image_file, (self.x, self.y))
     
-    def shoot(self, bullet):
+    def shoot(self, bullet) -> None:
         if len(self.stack) < self.max_bullets:
-            if type(bullet) is BigBullet and self._max_big_bullets is 0: # section 1.9
+            if type(bullet) is BigBullet and self.max_big_bullets == 0: # section 1.9
                 print('Special bullet already been shooted')
             elif type(bullet) is BigBullet:
                 self.max_big_bullets-=1 
@@ -179,16 +192,16 @@ class Spaceship(pygame.Rect):
         else:
             print('The stack is full')
 
-    def hit(self, bullet):
+    def hit(self, bullet) -> None:
         self.stack.remove(bullet)
     
-    def miss_shoot(self, bullet):
+    def miss_shoot(self, bullet) -> None:
         self.stack.remove(bullet)
 
-    def got_hit(self, object):
+    def got_hit(self, object) -> None:
         self.life -= object.power
 
-    def explode(self):
+    def explode(self) -> bool:
         if self.life is 0:
             return True
         else:
