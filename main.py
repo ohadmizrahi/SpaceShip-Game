@@ -41,7 +41,7 @@ def handle_objects(blue_stack, red_stack, stones):
                 blue_spaceship.life -= 1
             if window.checkCollide(red_spaceship, stone):
                 red_spaceship.life -= 1
-
+            print()
     for blue_bullet in blue_stack:
         blue_bullet.move(1, BULLET_STEP)
         if window.checkCollide(blue_bullet, red_spaceship) or window.checkBorders(blue_bullet, 'right'):
