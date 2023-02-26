@@ -2,6 +2,7 @@ import pygame
 import os
 from Model.objects import Bullet, BigBullet
 
+
 # TODO fix the stack property
 
 class Spaceship(pygame.Rect):
@@ -149,13 +150,13 @@ class Spaceship(pygame.Rect):
 
     def move(self, STEP, window):
         keys_pressed = pygame.key.get_pressed()
-        if keys_pressed[self.left] and not window.checkBorders(self, 'left') and not window.checkBorders(self, 'mid_left'):
+        if keys_pressed[self.left] and not window.check_borders(self, 'left') and not window.check_borders(self, 'mid_left'):
             self.x -= STEP
-        if keys_pressed[self.right] and not window.checkBorders(self, 'right') and not window.checkBorders(self, 'mid_right'):
+        if keys_pressed[self.right] and not window.check_borders(self, 'right') and not window.check_borders(self, 'mid_right'):
             self.x += STEP
-        if keys_pressed[self.up] and not window.checkBorders(self, 'up'):
+        if keys_pressed[self.up] and not window.check_borders(self, 'up'):
             self.y -= STEP
-        if keys_pressed[self.down] and not window.checkBorders(self, 'down'):
+        if keys_pressed[self.down] and not window.check_borders(self, 'down'):
             self.y += STEP
     
     def blitSpachship(self, window):
@@ -177,7 +178,16 @@ class Spaceship(pygame.Rect):
 
         else:
             print('The stack is full')
-        
+
+    def hit(self, bullet):
+        self.stack.remove(bullet)
+    
+    def miss_shoot(self, bullet):
+        self.stack.remove(bullet)
+
+    def got_hit(self, object):
+        self.life -= object.power
+
     def explode(self):
         if self.life is 0:
             return True

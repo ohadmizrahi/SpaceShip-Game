@@ -73,23 +73,23 @@ class Window:
             self._fps = new_fps
 
 
-    def createTitle(self, title):
+    def create_title(self, title):
         pygame.display.set_caption(title)
     
-    def writeToWindow(self, messege, size, location, font='comicsans'):
+    def write_to_window(self, messege, size, location, font='comicsans'):
         FONT = pygame.font.SysFont(font, size)
         text = FONT.render(messege, 1, 'white')
         self._screen.blit(text, location)
         pygame.display.update()
     
-    def newScoreBoard(self, spaceships, font: str, size: int, color: tuple):
+    def new_score_board(self, spaceships, font: str, size: int, color: tuple):
         FONT = pygame.font.SysFont(font, size)
         right = FONT.render("LIFE " + str(spaceships[0].life), 1, color)
         self._screen.blit(right,(self.width - right.get_width() - 10, 10))
         left = FONT.render("LIFE " + str(spaceships[1].life), 1, color)
         self._screen.blit(left, (10, 10))
 
-    def checkBorders(self, entity, border) -> bool:
+    def check_borders(self, entity, border) -> bool:
         cross_border = False
         if border is 'left' and entity.x < self.borders[border]:
             cross_border = True
@@ -106,24 +106,60 @@ class Window:
         
         return cross_border
 
-    def checkCollide(self, object1, object2) -> bool:
+    def check_collide(self, object1, object2) -> bool:
         if object1.colliderect(object2):
             pygame.event.post(pygame.event.Event(__class__.COLLIDE))
             return True
         else:
             return False
+    
+    def handle_objects_movement(self, objects: list):
+        for object in objects:
+            object.move(object.step)
 
-    def drawWindow(self, spaceships: list, stacks: dict, stones ):
+    
+    def handle_objects_events(self, blue_spaceship, red_spaceship, stones):
+        for stone in stones: # section 1.10
+            if self.check_borders(stone, 'left') or self.check_borders(stone, 'right'):
+                stone.explode(stones, sound=False)
+            if self.check_collide(blue_spaceship, stone):
+                blue_spaceship.got_hit(stone)
+                stone.explode(stones, sound=True)
+            if self.check_collide(red_spaceship, stone):
+                red_spaceship.got_hit(stone)
+                stone.explode(stones, sound=True)
+
+        for blue_bullet in blue_spaceship.stack:
+            if self.check_borders(blue_bullet, 'right'):
+                blue_spaceship.miss_shoot(blue_bullet)
+            if self.check_collide(blue_bullet, red_spaceship):
+                blue_spaceship.hit(blue_bullet)
+                red_spaceship.got_hit(blue_bullet)
+
+        for red_bullet in red_spaceship.stack:
+            if self.check_borders(red_bullet, 'left'):
+                red_spaceship.miss_shoot(red_bullet)
+            if self.check_collide(red_bullet, blue_spaceship):
+                red_spaceship.hit(red_bullet)
+                blue_spaceship.got_hit(red_bullet)
+
+            for blue_bullet in blue_spaceship.stack:
+                if self.check_collide(red_bullet, blue_bullet): # section 1.7
+                    red_spaceship.miss_shoot(red_bullet)
+                    blue_spaceship.miss_shoot(blue_bullet)
+
+
+    def draw_window(self, spaceships: list, stacks: dict, stones):
         self._screen.blit(self.background, (0,0))
         pygame.draw.rect(self._screen, 'black', self._mid_border)
         for spaceship in spaceships:
             spaceship.blitSpachship(self._screen)
-        self.newScoreBoard(spaceships, 'comicsans', 40, (255, 255, 255))
+        self.new_score_board(spaceships, 'comicsans', 40, (255, 255, 255))
         all_bullets = stacks['red_stack'] + stacks['blue_stack']
         for bullet in all_bullets:
             bullet.blitBullet(self._screen)
         for stone in stones:
             stone.blitStone(self._screen)
-        self.writeToWindow('Ohad Mizrahi|Or Solomon|Bar Siboni', 18, (300, self.height-40)) # section 1.5
+        self.write_to_window('Ohad Mizrahi|Or Solomon|Bar Siboni', 18, (300, self.height-40)) # section 1.5
         pygame.display.update()
 
