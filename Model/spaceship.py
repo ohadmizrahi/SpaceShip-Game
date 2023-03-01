@@ -162,6 +162,19 @@ class Spaceship(pygame.Rect):
             self._max_big_bullets = new_max_big_bullets
 
     def move(self, STEP, window):
+        '''
+        Description:
+        -------------
+            move the spaceship on the window by the steps
+            the keys are provide when init the spaceship (keys)
+
+        Parameters:
+        -----------
+            STEP: int
+                the pace the spaceship is move by
+            window: Window object
+                the surface the spaceship moving in
+        '''
         keys_pressed = pygame.key.get_pressed()
         if keys_pressed[self.left] and not window.check_borders(self, 'left') and not window.check_borders(self, 'mid_left'):
             self.x -= STEP
@@ -172,10 +185,30 @@ class Spaceship(pygame.Rect):
         if keys_pressed[self.down] and not window.check_borders(self, 'down'):
             self.y += STEP
     
-    def blitSpachship(self, window) -> None:
+    def blit_spachship(self, window) -> None:
+        '''
+        Description:
+        -------------
+            Blit the spaceship into the screen
+
+        Parameters:
+        -----------
+            window: Window object
+            the surface the spaceship is blit into
+        '''
         window.blit(self.image_file, (self.x, self.y))
     
     def shoot(self, bullet) -> None:
+        '''
+        Description:
+        -------------
+            spaceship shoot the bullet when the stack is not full
+
+        Parameters:
+        -----------
+            bullet: Bullet/BigBullet
+                object that been shooting by the spaceship
+        '''
         if len(self.stack) < self.max_bullets:
             if type(bullet) is BigBullet and self.max_big_bullets == 0: # section 1.9
                 print('Special bullet already been shooted')
@@ -193,15 +226,58 @@ class Spaceship(pygame.Rect):
             print('The stack is full')
 
     def hit(self, bullet) -> None:
+        '''
+        Description:
+        -------------
+            remove bullet from spaceship stack when hit enemy
+
+        Parameters:
+        -----------
+            bullet: Bullet or BigBullet
+                the bullet to remove from stack
+        '''
         self.stack.remove(bullet)
     
     def miss_shoot(self, bullet) -> None:
+        '''
+        Description:
+        -------------
+            remove bullet from spaceship stack when cross window borders
+
+        Parameters:
+        -----------
+            bullet: Bullet or BigBullet
+                the bullet to remove from stack
+        '''
         self.stack.remove(bullet)
 
     def got_hit(self, object) -> None:
+        '''
+        Description:
+        -------------
+            alerts when spaceship is hitten by enemy and reduce life by object power
+
+        Parameters:
+        -----------
+            object: Bullet/BigBullet or Stone
+                the object that hit the spaceship
+        '''
         self.life -= object.power
 
     def explode(self) -> bool:
+        '''
+        Description:
+        -------------
+            Alert for explodition of the spaceship 
+
+        Parameters:
+        -----------
+            None
+        
+        Return:
+        --------
+            bool value represent if the spaceship explode
+        '''
         if self.life is 0:
             return True
         else:

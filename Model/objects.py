@@ -80,11 +80,31 @@ class Bullet(pygame.Rect):
             self._image_file = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(
             os.path.join('Assets', new_image)), (self.height, self.width)), 0)
     
-    def blitBullet(self, window) -> None:
-        window.blit(self._image_file, (self.x, self.y))
+    def blit_bullet(self, window) -> None:
+        '''
+        Description:
+        -------------
+            blit the bullet objects to show bullet on game window
+
+        Parameters:
+        -----------
+            window: Surface
+                game window
+            
+        '''
+        window.blit(self.image_file, (self.x, self.y))
     
     def move(self, step: int) -> None:
-        self.x += (self._direction*step)
+        '''
+        Description:
+        -------------
+            move the bullet on game window
+
+        Parameters:
+        -----------
+            step: movement pace
+        '''
+        self.x += (self.direction*step)
 
 
 class BigBullet(Bullet): # section 1.9
@@ -175,13 +195,45 @@ class Stone(pygame.Rect): # section 1.10
         else:
             self._power = new_power
 
-    def blitStone(self, window) -> None:
+    def blit_stone(self, window) -> None:
+        '''
+        Description:
+        -------------
+            blit the stone objects to show stone on game window
+
+        Parameters:
+        -----------
+            window: Surface
+                game window
+            
+        '''
         window.blit(self.image_file, (self.x, self.y))
     
     def move(self, step: int) -> None:
+        '''
+        Description:
+        -------------
+            move the stone on game window
+
+        Parameters:
+        -----------
+            step: movement pace
+        '''
         self.x += (self._direction*step)
     
     def explode(self, object_stack, sound=True) -> None:
+        '''
+        Description:
+        -------------
+            remove stone from game window
+
+        Parameters:
+        -----------
+            object_stack: list
+                the stack of the current object remove stone from
+            sound: bool
+                default is True - make explotion sound
+        '''
         if sound:
             explode = pygame.mixer.Sound('Assets\Grenade+1.mp3')
             explode.play(fade_ms= 1000)
