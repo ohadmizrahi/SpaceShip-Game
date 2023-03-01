@@ -286,10 +286,10 @@ class Window:
         for spaceship in spaceships:
             spaceship.blit_spachship(self.screen)
             for bullet in spaceship.stack:
-                bullet.blitBullet(self.screen)
+                bullet.blit_bullet(self.screen)
         self.new_score_board(spaceships, 'comicsans', 40, (255, 255, 255))
         for stone in stones:
-            stone.blitStone(self.screen)
+            stone.blit_stone(self.screen)
         self.write_to_window('Ohad Mizrahi|Or Solomon|Bar Siboni', 18, location='lower') # section 1.5
         pygame.display.update()
 

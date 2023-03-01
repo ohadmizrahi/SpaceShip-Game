@@ -80,7 +80,7 @@ class Bullet(pygame.Rect):
             self._image_file = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(
             os.path.join('Assets', new_image)), (self.height, self.width)), 0)
     
-    def blitBullet(self, window) -> None:
+    def blit_bullet(self, window) -> None:
         window.blit(self._image_file, (self.x, self.y))
     
     def move(self, step: int) -> None:
@@ -175,7 +175,7 @@ class Stone(pygame.Rect): # section 1.10
         else:
             self._power = new_power
 
-    def blitStone(self, window) -> None:
+    def blit_stone(self, window) -> None:
         window.blit(self.image_file, (self.x, self.y))
     
     def move(self, step: int) -> None:
