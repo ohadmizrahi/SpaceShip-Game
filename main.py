@@ -10,8 +10,6 @@ from dataclasses import dataclass
 pygame.font.init()
 pygame.mixer.init()
 
-# TODO sections: 1.11 
-
 # Global Variables
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 44
 WINDOW_WIDTH, WINDOW_HEIGHT = 1200, 700 # section 1.8 
