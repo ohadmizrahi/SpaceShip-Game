@@ -150,10 +150,18 @@ class Window:
                 RGB color 
         '''
         FONT = pygame.font.SysFont(font, size)
-        right = FONT.render("LIFE " + str(spaceships[0].life), 1, color)
-        self.screen.blit(right,(self.width - right.get_width() - 10, 10))
-        left = FONT.render("LIFE " + str(spaceships[1].life), 1, color)
-        self.screen.blit(left, (10, 10))
+        red = FONT.render("RED LIFE " + str(spaceships[0].life), 1, color)
+        blue = FONT.render("BLUE LIFE " + str(spaceships[1].life), 1, color)
+        if spaceships[0].x == self.width - 100:
+            red_loc = (self.width - red.get_width() - 30, 10)
+            blue_loc = (10,10)
+        else:
+            blue_loc = (self.width - red.get_width() - 30, 10)
+            red_loc = (10,10)
+
+        self.screen.blit(red,red_loc)
+        self.screen.blit(blue, blue_loc)
+
 
     def check_borders(self, entity, border: str) -> bool:
         '''
