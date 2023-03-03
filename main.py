@@ -35,14 +35,14 @@ class Left():
     keys = {'left': pygame.K_1, 'right': pygame.K_4, 'up': pygame.K_3, 'down': pygame.K_2, 'shoot': pygame.K_q, 'shoot_big': pygame.K_LSHIFT}
     x = 75
     rotate = 90
-    score_board_x = 'left'
+    score_board_side = 'left'
 
 @dataclass
 class Right():
     keys = {'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'up': pygame.K_UP, 'down': pygame.K_DOWN, 'shoot': pygame.K_RCTRL, 'shoot_big': pygame.K_RSHIFT}
     x = WINDOW_WIDTH-100
     rotate = 270
-    score_board_x = 'right'
+    score_board_side = 'right'
     
 
 # Create objects
@@ -65,9 +65,9 @@ def create_game_objects() -> Tuple[Spaceship, Spaceship, Window]:
     '''
     window = Window(WINDOW_WIDTH, WINDOW_HEIGHT, BG_IMG, FPS)
     blue_spaceship = Spaceship(Left.x, window.height//2 -55 , SPACESHIP_WIDTH, SPACESHIP_HEIGHT,
-                                BLUE_SPACESHIP_IMG, Left.rotate, Left.keys, MX_LIFE, MAX_BULLET, 1, 'blue', Left.score_board_x)
+                                BLUE_SPACESHIP_IMG, Left.rotate, Left.keys, MX_LIFE, MAX_BULLET, 1, 'blue', Left.score_board_side)
     red_spaceship = Spaceship(Right.x, window.height//2 -55, SPACESHIP_WIDTH,
-                            SPACESHIP_HEIGHT, RED_SPACESHIP_IMG, Right.rotate, Right.keys, MX_LIFE, MAX_BULLET, 1, 'red', Right.score_board_x)                
+                            SPACESHIP_HEIGHT, RED_SPACESHIP_IMG, Right.rotate, Right.keys, MX_LIFE, MAX_BULLET, 1, 'red', Right.score_board_side)                
     return blue_spaceship, red_spaceship, window
 
 def change_sides(red_spaceship, blue_spaceship):
