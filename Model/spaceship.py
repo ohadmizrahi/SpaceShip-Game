@@ -9,7 +9,7 @@ class Spaceship(pygame.Rect):
 
     def __init__(self, x: int, y: int, width: int, height: int, image_file: str,
                   imageRotate: int, keys: Dict[str, int], life: int, max_bullets: int,
-                    max_big_bullets: int, color: str) -> None:
+                    max_big_bullets: int, color: str, score_board_side) -> None:
 
         super().__init__(x, y, width, height)
         self._direction = imageRotate
@@ -21,9 +21,21 @@ class Spaceship(pygame.Rect):
         self._stack = []
         self._color = color
         self._max_big_bullets = max_big_bullets
+        self._score_board_side = score_board_side 
     
     def __str__(self) -> str:
         return f'{self._color} spaceship'
+
+    @property
+    def score_board_side(self):
+        return self._score_board_side
+    
+    @score_board_side.setter
+    def score_board_side(self, new_side):
+        if type(new_side) is not str:
+            raise Exception('side property must be str')
+        else:
+            self._score_board_side = new_side
 
     @property
     def direction(self):
@@ -241,8 +253,7 @@ class Spaceship(pygame.Rect):
         '''
         if self.life is 0:
             return True
-        else:
-            return False
+        return False
             
 
 
