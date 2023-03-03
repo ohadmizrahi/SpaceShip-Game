@@ -9,24 +9,33 @@ class Spaceship(pygame.Rect):
 
     def __init__(self, x: int, y: int, width: int, height: int, image_file: str,
                   imageRotate: int, keys: Dict[str, int], life: int, max_bullets: int,
-                    max_big_bullets: int, color: str) -> None:
+                    max_big_bullets: int, color: str, score_board_side) -> None:
 
         super().__init__(x, y, width, height)
         self._direction = imageRotate
         self._image_file = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(
             os.path.join('Assets', image_file)), (self.height, self.width)), imageRotate)
-        self._left = keys['left']
-        self._right = keys['right']
-        self._up = keys['up']
-        self._down = keys['down']
+        self._keys = keys
         self._life = life
         self._max_bullets = max_bullets
         self._stack = []
         self._color = color
         self._max_big_bullets = max_big_bullets
+        self._score_board_side = score_board_side 
     
     def __str__(self) -> str:
         return f'{self._color} spaceship'
+
+    @property
+    def score_board_side(self):
+        return self._score_board_side
+    
+    @score_board_side.setter
+    def score_board_side(self, new_side):
+        if type(new_side) is not str:
+            raise Exception('side property must be str')
+        else:
+            self._score_board_side = new_side
 
     @property
     def direction(self):
@@ -73,54 +82,18 @@ class Spaceship(pygame.Rect):
         else:
             self._image_file = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(
             os.path.join('Assets', new_image)), (self.height, self.width)), self.direction)
-    
-    @property
-    def left(self):
-        return self._left
-
-    @left.setter
-    def left(self, new_keys):
-        expected_keys = ['left', 'right', 'up', 'down']
-        if type(new_keys) is not dict or sorted(expected_keys) != sorted([*new_keys]) :
-            raise Exception('The new keys must be in dict when keys are (left, right, up, down)')
-        else:
-            self._left = new_keys['left']
 
     @property
-    def right(self):
-        return self._right
+    def keys(self):
+        return self._keys
     
-    @right.setter
-    def right(self, new_keys):
-        expected_keys = ['left', 'right', 'up', 'down']
+    @keys.setter
+    def keys(self, new_keys):
+        expected_keys = ['left', 'right', 'up', 'down', 'shoot', 'shoot_big']
         if type(new_keys) is not dict or sorted(expected_keys) != sorted([*new_keys]) :
-            raise Exception('The new keys must be in dict when keys are (left, right, up, down)')
+            raise Exception('The new keys must be in dict when keys are (left, right, up, down, shoot, shoot_big)')
         else:
-            self._right = new_keys['right']
-
-    @property
-    def up(self):
-        return self._up
-    
-    @up.setter
-    def up(self, new_keys):
-        expected_keys = ['left', 'right', 'up', 'down']
-        if type(new_keys) is not dict or sorted(expected_keys) != sorted([*new_keys]) :
-            raise Exception('The new keys must be in dict when keys are (left, right, up, down)')
-        else:
-            self._up = new_keys['up']
-
-    @property
-    def down(self):
-        return self._down
-    
-    @down.setter
-    def down(self, new_keys):
-        expected_keys = ['left', 'right', 'up', 'down']
-        if type(new_keys) is not dict or sorted(expected_keys) != sorted([*new_keys]) :
-            raise Exception('The new keys must be in dict when keys are (left, right, up, down)')
-        else:
-            self._down = new_keys['down']
+            self._keys = new_keys
     
     @property
     def life(self):
@@ -176,13 +149,13 @@ class Spaceship(pygame.Rect):
                 the surface the spaceship moving in
         '''
         keys_pressed = pygame.key.get_pressed()
-        if keys_pressed[self.left] and not window.check_borders(self, 'left') and not window.check_borders(self, 'mid_left'):
+        if keys_pressed[self.keys['left']] and not window.check_borders(self, 'left') and not window.check_borders(self, 'mid_left'):
             self.x -= STEP
-        if keys_pressed[self.right] and not window.check_borders(self, 'right') and not window.check_borders(self, 'mid_right'):
+        if keys_pressed[self.keys['right']] and not window.check_borders(self, 'right') and not window.check_borders(self, 'mid_right'):
             self.x += STEP
-        if keys_pressed[self.up] and not window.check_borders(self, 'up'):
+        if keys_pressed[self.keys['up']] and not window.check_borders(self, 'up'):
             self.y -= STEP
-        if keys_pressed[self.down] and not window.check_borders(self, 'down'):
+        if keys_pressed[self.keys['down']] and not window.check_borders(self, 'down'):
             self.y += STEP
     
     def blit_spachship(self, window) -> None:
@@ -280,8 +253,7 @@ class Spaceship(pygame.Rect):
         '''
         if self.life is 0:
             return True
-        else:
-            return False
+        return False
             
 
 

@@ -5,11 +5,10 @@ from Model.window import Window
 from Model.objects import Bullet, BigBullet, Stone
 import random
 from typing import Tuple
+from dataclasses import dataclass
 
 pygame.font.init()
 pygame.mixer.init()
-
-# TODO sections: 1.11 
 
 # Global Variables
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 44
@@ -28,12 +27,23 @@ STONE_IMG = 'stone.png'
 FPS = 60
 MX_LIFE = 10
 END_GAME_DELAY = 5000
+BULLET_DIRECTION = 1
 
+@dataclass
+class Left():
+    # section 1.1
+    keys = {'left': pygame.K_1, 'right': pygame.K_4, 'up': pygame.K_3, 'down': pygame.K_2, 'shoot': pygame.K_q, 'shoot_big': pygame.K_LSHIFT}
+    x = 75
+    rotate = 90
+    score_board_x = 'left'
 
-# Keyboard Keys
-# section 1.1
-blue_keys = {'left': pygame.K_1, 'right': pygame.K_4, 'up': pygame.K_3, 'down': pygame.K_2}
-red_keys = {'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'up': pygame.K_UP, 'down': pygame.K_DOWN}
+@dataclass
+class Right():
+    keys = {'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'up': pygame.K_UP, 'down': pygame.K_DOWN, 'shoot': pygame.K_RCTRL, 'shoot_big': pygame.K_RSHIFT}
+    x = WINDOW_WIDTH-100
+    rotate = 270
+    score_board_x = 'right'
+    
 
 # Create objects
 def create_game_objects() -> Tuple[Spaceship, Spaceship, Window]:
@@ -54,13 +64,35 @@ def create_game_objects() -> Tuple[Spaceship, Spaceship, Window]:
         e.g. (blue_spaceship, red_spaceship, window) 
     '''
     window = Window(WINDOW_WIDTH, WINDOW_HEIGHT, BG_IMG, FPS)
-    blue_spaceship = Spaceship(75, window.height//2 -55 , SPACESHIP_WIDTH, SPACESHIP_HEIGHT,
-                                BLUE_SPACESHIP_IMG, 90, blue_keys, MX_LIFE, MAX_BULLET, 1, 'blue')
-    red_spaceship = Spaceship(window.width-100, window.height//2 -55, SPACESHIP_WIDTH,
-                            SPACESHIP_HEIGHT, RED_SPACESHIP_IMG, 270, red_keys, MX_LIFE, MAX_BULLET, 1, 'red')                
+    blue_spaceship = Spaceship(Left.x, window.height//2 -55 , SPACESHIP_WIDTH, SPACESHIP_HEIGHT,
+                                BLUE_SPACESHIP_IMG, Left.rotate, Left.keys, MX_LIFE, MAX_BULLET, 1, 'blue', Left.score_board_x)
+    red_spaceship = Spaceship(Right.x, window.height//2 -55, SPACESHIP_WIDTH,
+                            SPACESHIP_HEIGHT, RED_SPACESHIP_IMG, Right.rotate, Right.keys, MX_LIFE, MAX_BULLET, 1, 'red', Right.score_board_x)                
     return blue_spaceship, red_spaceship, window
 
-# Listen to the game event
+def change_sides(red_spaceship, blue_spaceship):
+    '''
+    Description:
+    -------------
+        change spaceships sides
+
+    Parameters:
+    -----------
+        red spaceship: Spaceship
+        blue_spaceship: Spaceship
+    '''
+    global BULLET_DIRECTION
+    Right.x = red_spaceship.x
+    Left.x = blue_spaceship.x
+    Right.keys = red_spaceship.keys
+    Left.keys = blue_spaceship.keys
+    blue_spaceship.x, blue_spaceship.direction, blue_spaceship.keys = Right.x, Right.rotate, Right.keys
+    red_spaceship.x, red_spaceship.direction, red_spaceship.keys = Left.x, Left.rotate, Left.keys
+    blue_spaceship.image_file = BLUE_SPACESHIP_IMG
+    red_spaceship.image_file = RED_SPACESHIP_IMG
+    BULLET_DIRECTION *= -1
+    red_spaceship.score_board_side, blue_spaceship.score_board_side = blue_spaceship.score_board_side, red_spaceship.score_board_side
+
 def listen_events(blue_spaceship: Spaceship, red_spaceship: Spaceship, window: Window):
     '''
     Description:
@@ -73,6 +105,7 @@ def listen_events(blue_spaceship: Spaceship, red_spaceship: Spaceship, window: W
         red_spaceship: Spaceship object in the right side
         window: Window object
     '''
+    global BULLET_DIRECTION
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -81,27 +114,27 @@ def listen_events(blue_spaceship: Spaceship, red_spaceship: Spaceship, window: W
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 return False
-            if event.key == pygame.K_q: #section 1.1
-                bullet = Bullet(BULLET_WIDTH, BULLET_HEIGHT, blue_spaceship, BLUE_BULLET_IMG, OBJECTS_STEP, 1)
+            if event.key == blue_spaceship.keys['shoot']: #section 1.1
+                bullet = Bullet(BULLET_WIDTH, BULLET_HEIGHT, blue_spaceship, BLUE_BULLET_IMG, OBJECTS_STEP,BULLET_DIRECTION)
                 blue_spaceship.shoot(bullet)
-            if event.key == pygame.K_RCTRL:
-                bullet = Bullet(BULLET_WIDTH, BULLET_HEIGHT, red_spaceship, RED_BULLET_IMG, OBJECTS_STEP, -1)
+            if event.key == red_spaceship.keys['shoot']:
+                bullet = Bullet(BULLET_WIDTH, BULLET_HEIGHT, red_spaceship, RED_BULLET_IMG, OBJECTS_STEP, BULLET_DIRECTION*-1)
                 red_spaceship.shoot(bullet)
-            if event.key == pygame.K_RSHIFT: # section 1.9
-                big_bullet = BigBullet(BULLET_WIDTH*2, BULLET_HEIGHT*2, red_spaceship, RED_BULLET_IMG, OBJECTS_STEP, -1)
+            if event.key == red_spaceship.keys['shoot_big']: # section 1.9
+                big_bullet = BigBullet(BULLET_WIDTH*2, BULLET_HEIGHT*2, red_spaceship, RED_BULLET_IMG, OBJECTS_STEP, BULLET_DIRECTION*-1)
                 red_spaceship.shoot(big_bullet)
-            if event.key == pygame.K_LSHIFT: # section 1.9
-                big_bullet = BigBullet(BULLET_WIDTH*2, BULLET_HEIGHT*2, blue_spaceship, BLUE_BULLET_IMG, OBJECTS_STEP, 1)
+            if event.key == blue_spaceship.keys['shoot_big']: # section 1.9
+                big_bullet = BigBullet(BULLET_WIDTH*2, BULLET_HEIGHT*2, blue_spaceship, BLUE_BULLET_IMG, OBJECTS_STEP, BULLET_DIRECTION)
                 blue_spaceship.shoot(big_bullet)
             if event.key == pygame.K_SPACE: # section 1.10
                 stone = Stone(random.choice([0,window.width-50]), random.randint(0, window.height-50), 50, 50, STONE_IMG, OBJECTS_STEP)
                 STONES.append(stone)
             if event.key == pygame.K_TAB: # section 1.11 bonus
+                change_sides(red_spaceship, blue_spaceship)
                 pass
             if event.key == pygame.K_KP_ENTER:
                 restart_game()
-
-
+    
 def end_game(spaceship1: Spaceship, spaceship2: Spaceship, window: Window) -> bool:
     '''
     Description:
@@ -139,6 +172,7 @@ def restart_game() -> None:
 
 def main() -> None:
     blue_spaceship, red_spaceship, window = create_game_objects()
+    spaceships = [red_spaceship, blue_spaceship]
     window.create_title('SpaceShip Game')
     clock = pygame.time.Clock()
     run = True
@@ -154,7 +188,7 @@ def main() -> None:
         red_spaceship.move(SPACESHIP_STEP, window)
         window.handle_objects_movement(red_spaceship.stack, blue_spaceship.stack, STONES)
         window.handle_objects_events(blue_spaceship, red_spaceship, STONES)
-        window.draw_window([red_spaceship, blue_spaceship], STONES)
+        window.draw_window(spaceships, STONES)
 
 if __name__ == "__main__":
     main()

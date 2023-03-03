@@ -1,10 +1,7 @@
 import pygame
 import os
-from typing import Tuple
 
 class Window:
-
-    COLLIDE = pygame.USEREVENT + 1
 
     def __init__(self, width: int, height: int, bg_img: str, fps: int):
         self._width = width
@@ -150,10 +147,20 @@ class Window:
                 RGB color 
         '''
         FONT = pygame.font.SysFont(font, size)
-        right = FONT.render("LIFE " + str(spaceships[0].life), 1, color)
-        self.screen.blit(right,(self.width - right.get_width() - 10, 10))
-        left = FONT.render("LIFE " + str(spaceships[1].life), 1, color)
-        self.screen.blit(left, (10, 10))
+        red = FONT.render("RED LIFE " + str(spaceships[0].life), 1, color)
+        blue = FONT.render("BLUE LIFE " + str(spaceships[1].life), 1, color)
+        red_loc = (self.width - red.get_width() - 30, 10)
+        blue_loc = (10,10)
+        if spaceships[0].score_board_side == 'right':
+            red_loc = (self.width - red.get_width() - 30, 10)
+            blue_loc = (10,10)
+        else:
+            blue_loc = (self.width - red.get_width() - 30, 10)
+            red_loc = (10,10)
+
+        self.screen.blit(red,red_loc)
+        self.screen.blit(blue, blue_loc)
+
 
     def check_borders(self, entity, border: str) -> bool:
         '''
@@ -204,7 +211,6 @@ class Window:
             bool value represent if collide occur
         '''
         if object1.colliderect(object2):
-            pygame.event.post(pygame.event.Event(__class__.COLLIDE))
             return True
         else:
             return False
@@ -267,6 +273,7 @@ class Window:
             for blue_bullet in blue_spaceship.stack:
                 if self.check_collide(red_bullet, blue_bullet): # section 1.7
                     red_spaceship.miss_shoot(red_bullet)
+                    
                     blue_spaceship.miss_shoot(blue_bullet)
 
 
