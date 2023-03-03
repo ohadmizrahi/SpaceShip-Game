@@ -131,7 +131,6 @@ def listen_events(blue_spaceship: Spaceship, red_spaceship: Spaceship, window: W
                 STONES.append(stone)
             if event.key == pygame.K_TAB: # section 1.11 bonus
                 change_sides(red_spaceship, blue_spaceship)
-                pass
             if event.key == pygame.K_KP_ENTER:
                 restart_game()
     
