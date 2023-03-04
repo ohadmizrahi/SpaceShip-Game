@@ -24,7 +24,7 @@ class Spaceship(pygame.Rect):
         self._score_board_side = score_board_side 
     
     def __str__(self) -> str:
-        return f'{self._color} spaceship'
+        return f'{self._color.capitalize()} spaceship'
 
     @property
     def score_board_side(self):

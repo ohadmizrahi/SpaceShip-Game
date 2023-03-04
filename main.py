@@ -132,7 +132,7 @@ def listen_events(blue_spaceship: Spaceship, red_spaceship: Spaceship, window: W
             if event.key == pygame.K_TAB: # section 1.11 bonus
                 change_sides(red_spaceship, blue_spaceship)
             if event.key == pygame.K_KP_ENTER:
-                restart_game()
+                restart_game(window, not_finish=True)
     
 def end_game(spaceship1: Spaceship, spaceship2: Spaceship, window: Window) -> bool:
     '''
@@ -150,22 +150,28 @@ def end_game(spaceship1: Spaceship, spaceship2: Spaceship, window: Window) -> bo
         write end game messege on screen
         bool value represent if the game ends or not
     '''
-    SIZE = 40
+    SIZE = 60
     if spaceship1.explode():
-        window.write_to_window(f'Game over - Winner is {str(spaceship2)}', SIZE,) # section 1.4
+        window.write_to_window(f'Game over - Winner is {str(spaceship2)}', SIZE) # section 1.4
+        pygame.display.update()
         return True
     elif spaceship2.explode():
         window.write_to_window(f'Game over - Winner is {str(spaceship1)}', SIZE) # section 1.4
+        pygame.display.update()
         return True
     else:
         return False
 
-def restart_game() -> None:
+def restart_game(window, not_finish=False) -> None:
     '''
     Description:
     -------------
         restart the game after delay of 5000 miliseconds
     '''
+    SIZE = 60
+    if not_finish:
+        window.write_to_window(f'RESTART THE GAME', SIZE)
+        pygame.display.update()
     pygame.time.delay(END_GAME_DELAY)
     main()
 
@@ -181,8 +187,7 @@ def main() -> None:
         if response is False:
             run = False
         if end_game(red_spaceship, blue_spaceship, window): # section 1.4
-            restart_game() # section 1.4
-
+            restart_game(window)
         blue_spaceship.move(SPACESHIP_STEP, window)
         red_spaceship.move(SPACESHIP_STEP, window)
         window.handle_objects_movement(red_spaceship.stack, blue_spaceship.stack, STONES)

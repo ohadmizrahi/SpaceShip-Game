@@ -119,7 +119,7 @@ class Window:
             font: default - 'comicsans'
             location: default - 'middle'
                 where to display the text (y axis)
-                option: lower, middle
+                option: lower, middle, upper
         '''
         FONT = pygame.font.SysFont(font, size)
         text = FONT.render(messege, 1, 'white')
@@ -127,8 +127,9 @@ class Window:
             location = (self.width//2 - text.get_width()//2, self.height//2 - text.get_height()//2)
         if location == 'lower':
             location = (self.width//2 - text.get_width()//2, self.height - text.get_height())
+        if location == 'upper':
+            location = (self.width//2 - text.get_width()//2, 10)
         self.screen.blit(text, location)
-        pygame.display.update()
     
     def new_score_board(self, spaceships: list, font: str, size: int, color: tuple) -> None:
         '''
@@ -298,5 +299,7 @@ class Window:
         for stone in stones:
             stone.blit_stone(self.screen)
         self.write_to_window('Ohad Mizrahi|Or Solomon|Bar Siboni', 18, location='lower') # section 1.5
+        self.write_to_window('Press Enter to Restart',18, location='upper')
         pygame.display.update()
+    
 
