@@ -34,6 +34,7 @@ class Left():
     # section 1.1
     keys = {'left': pygame.K_1, 'right': pygame.K_4, 'up': pygame.K_3, 'down': pygame.K_2, 'shoot': pygame.K_q, 'shoot_big': pygame.K_LSHIFT}
     x = 75
+    y = WINDOW_HEIGHT//2 - SPACESHIP_HEIGHT
     rotate = 90
     score_board_side = 'left'
 
@@ -41,6 +42,7 @@ class Left():
 class Right():
     keys = {'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'up': pygame.K_UP, 'down': pygame.K_DOWN, 'shoot': pygame.K_RCTRL, 'shoot_big': pygame.K_RSHIFT}
     x = WINDOW_WIDTH-100
+    y = WINDOW_HEIGHT//2 - SPACESHIP_HEIGHT
     rotate = 270
     score_board_side = 'right'
     
@@ -64,9 +66,9 @@ def create_game_objects() -> Tuple[Spaceship, Spaceship, Window]:
         e.g. (blue_spaceship, red_spaceship, window) 
     '''
     window = Window(WINDOW_WIDTH, WINDOW_HEIGHT, BG_IMG, FPS)
-    blue_spaceship = Spaceship(Left.x, window.height//2 -55 , SPACESHIP_WIDTH, SPACESHIP_HEIGHT,
+    blue_spaceship = Spaceship(Left.x, Left.y , SPACESHIP_WIDTH, SPACESHIP_HEIGHT,
                                 BLUE_SPACESHIP_IMG, Left.rotate, Left.keys, MX_LIFE, MAX_BULLET, 1, 'blue', Left.score_board_side)
-    red_spaceship = Spaceship(Right.x, window.height//2 -55, SPACESHIP_WIDTH,
+    red_spaceship = Spaceship(Right.x, Right.y, SPACESHIP_WIDTH,
                             SPACESHIP_HEIGHT, RED_SPACESHIP_IMG, Right.rotate, Right.keys, MX_LIFE, MAX_BULLET, 1, 'red', Right.score_board_side)                
     return blue_spaceship, red_spaceship, window
 
@@ -82,12 +84,10 @@ def change_sides(red_spaceship, blue_spaceship):
         blue_spaceship: Spaceship
     '''
     global BULLET_DIRECTION
-    Right.x = red_spaceship.x
-    Left.x = blue_spaceship.x
-    Right.keys = red_spaceship.keys
-    Left.keys = blue_spaceship.keys
-    blue_spaceship.x, blue_spaceship.direction, blue_spaceship.keys = Right.x, Right.rotate, Right.keys
-    red_spaceship.x, red_spaceship.direction, red_spaceship.keys = Left.x, Left.rotate, Left.keys
+    Right.x, Right.y, Right.keys, Right.rotate = red_spaceship.x, blue_spaceship.y, red_spaceship.keys, red_spaceship.direction
+    Left.x, Left.y, Left.keys, Left.rotate = blue_spaceship.x, red_spaceship.y, blue_spaceship.keys, blue_spaceship.direction
+    blue_spaceship.x, blue_spaceship.y, blue_spaceship.direction, blue_spaceship.keys = Right.x, Left.y, Right.rotate, Right.keys
+    red_spaceship.x, red_spaceship.y, red_spaceship.direction, red_spaceship.keys = Left.x, Right.y, Left.rotate, Left.keys
     blue_spaceship.image_file = BLUE_SPACESHIP_IMG
     red_spaceship.image_file = RED_SPACESHIP_IMG
     BULLET_DIRECTION *= -1

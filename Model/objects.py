@@ -238,6 +238,12 @@ class Stone(pygame.Rect): # section 1.10
             explode = pygame.mixer.Sound('Assets\Grenade+1.mp3')
             explode.play(fade_ms= 1000)
         object_stack.remove(self)
+    
+    def check_got_hit(self, spaceship, window, object_stack):
+        for bullet in (spaceship.stack):
+            if window.check_collide(self, bullet):
+                self.explode(object_stack, sound=True)
+                spaceship.hit(bullet)
 
 
     

@@ -256,6 +256,8 @@ class Window:
             if self.check_collide(red_spaceship, stone):
                 red_spaceship.got_hit(stone)
                 stone.explode(stones, sound=True)
+            stone.check_got_hit(blue_spaceship, self, stones)
+            stone.check_got_hit(red_spaceship, self, stones)
 
         for blue_bullet in blue_spaceship.stack:
             if self.check_borders(blue_bullet, 'right'):
