@@ -66,10 +66,10 @@ def create_game_objects() -> Tuple[Spaceship, Spaceship, Window]:
         e.g. (blue_spaceship, red_spaceship, window) 
     '''
     window = Window(WINDOW_WIDTH, WINDOW_HEIGHT, BG_IMG, FPS)
-    blue_spaceship = Spaceship(Left.x, Left.y , SPACESHIP_WIDTH, SPACESHIP_HEIGHT,
-                                BLUE_SPACESHIP_IMG, Left.rotate, Left.keys, MX_LIFE, MAX_BULLET, 1, 'blue', Left.score_board_side)
-    red_spaceship = Spaceship(Right.x, Right.y, SPACESHIP_WIDTH,
-                            SPACESHIP_HEIGHT, RED_SPACESHIP_IMG, Right.rotate, Right.keys, MX_LIFE, MAX_BULLET, 1, 'red', Right.score_board_side)                
+    blue_spaceship = Spaceship(75, WINDOW_HEIGHT//2 - SPACESHIP_HEIGHT , SPACESHIP_WIDTH, SPACESHIP_HEIGHT,
+                                BLUE_SPACESHIP_IMG, 90, Left.keys, MX_LIFE, MAX_BULLET, 1, 'blue', Left.score_board_side)
+    red_spaceship = Spaceship(WINDOW_WIDTH-100, WINDOW_HEIGHT//2 - SPACESHIP_HEIGHT, SPACESHIP_WIDTH,
+                            SPACESHIP_HEIGHT, RED_SPACESHIP_IMG, 270, Right.keys, MX_LIFE, MAX_BULLET, 1, 'red', Right.score_board_side)                
     return blue_spaceship, red_spaceship, window
 
 def change_sides(red_spaceship, blue_spaceship):
