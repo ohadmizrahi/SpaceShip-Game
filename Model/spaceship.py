@@ -3,8 +3,6 @@ import os
 from Model.objects import Bullet, BigBullet
 from typing import Dict
 
-# TODO fix the stack property
-
 class Spaceship(pygame.Rect):
 
     def __init__(self, x: int, y: int, width: int, height: int, image_file: str,
