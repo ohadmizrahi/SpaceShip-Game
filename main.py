@@ -193,6 +193,6 @@ def main() -> None:
         window.handle_objects_movement(red_spaceship.stack, blue_spaceship.stack, STONES)
         window.handle_objects_events(blue_spaceship, red_spaceship, STONES)
         window.draw_window(spaceships, STONES)
-
+print()
 if __name__ == "__main__":
     main()
